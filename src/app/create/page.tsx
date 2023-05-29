@@ -1,13 +1,27 @@
+import { prisma } from '@/db';
 import { NextPage } from 'next';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 const Page: NextPage = () => {
+  const createItem = async (data: FormData) => {
+    'use server';
+
+    const title = data.get('title')?.valueOf();
+
+    if (typeof title !== 'string' || title.length === 0) {
+      throw new Error('Incorrect data!');
+    }
+
+    await prisma.taskManager.create({ data: { title, completed: false } });
+    redirect('/');
+  };
   return (
     <>
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-2xl">Create Page</h1>
       </div>
-      <form className="flex flex-col gap-1">
+      <form action={createItem} className="flex flex-col gap-1">
         <input
           type="text"
           name="title"
