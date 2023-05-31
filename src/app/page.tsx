@@ -6,6 +6,12 @@ const getData = () => {
   return prisma.taskManager.findMany();
 };
 
+async function toggleItem(id: string, completed: boolean) {
+  'use server';
+
+  await prisma.taskManager.update({ where: { id }, data: { completed } });
+}
+
 const Home = async () => {
   const data = await getData();
   return (
@@ -20,7 +26,7 @@ const Home = async () => {
       </div>
       <ul className="ml-2">
         {data.map((item) => (
-          <TaskItem key={item.id} {...item} />
+          <TaskItem key={item.id} {...item} toggleItem={toggleItem} />
         ))}
       </ul>
     </>
